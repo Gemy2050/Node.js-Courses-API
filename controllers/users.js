@@ -18,10 +18,8 @@ const getAllUsers = asyncWrapper(async (req, res) => {
 });
 
 const register = asyncWrapper(async (req, res, next) => {
+  // can access fileName from req.file.filename because of multer
   const { firstName, lastName, email, password, role } = req.body;
-  // can access fileName from req.fileName because of multer
-  const fileName = req.file.filename;
-
   const oldUser = await User.findOne({ email });
 
   if (oldUser) {
@@ -39,7 +37,7 @@ const register = asyncWrapper(async (req, res, next) => {
     email,
     password: hashedPassword,
     role,
-    avatar: fileName,
+    avatar: req?.file?.filename,
   });
 
   await user.save();

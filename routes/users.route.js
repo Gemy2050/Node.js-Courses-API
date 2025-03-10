@@ -5,6 +5,8 @@ const usersController = require("../controllers/users");
 const verifyToken = require("../middlewares/verifyToken");
 const multer = require("multer");
 const appError = require("../utils/appError");
+const allowedTo = require("../middlewares/allowedTo");
+const roles = require("../utils/roles");
 
 const diskStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -27,7 +29,12 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: diskStorage, fileFilter });
 
-router.get("/", verifyToken, usersController.getAllUsers);
+router.get(
+  "/",
+  verifyToken,
+  allowedTo(roles.MANAGER, roles.ADMIN),
+  usersController.getAllUsers
+);
 router.post("/register", upload.single("avatar"), usersController.register);
 router.post("/login", usersController.login);
 
